@@ -8,7 +8,7 @@ npm install number-word-project-abc123
 
 ## Usage
 
-import { convertToWord } from 'number-to-word-az';
+import { convertToWord } from 'number-word-project-abc123';
 
 console.log(convertToWord(123)); // => "yüz iyirmi üç"
 
