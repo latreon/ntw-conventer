@@ -1,4 +1,4 @@
-# ntw-conventer
+# Number to Word conventer
 
 Convert numbers to words in multiple languages, with special support for Azerbaijani, English, and Turkish.
 
