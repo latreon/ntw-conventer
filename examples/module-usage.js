@@ -1,5 +1,5 @@
 // Simple ES Module import example
-import { convertToWord } from 'number-to-word-az';
+import { convertToWord } from 'ntw-conventer';
 
 // Basic function call with arguments
 const result = convertToWord(42, { language: 'az' });

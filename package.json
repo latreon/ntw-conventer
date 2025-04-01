@@ -1,6 +1,6 @@
 {
     "name": "ntw-conventer",
-    "version": "2.0.0",
+    "version": "2.0.1",
     "description": "Convert numbers to words in multiple languages, with special support for Azerbaijani, English, and Turkish",
     "type": "module",
     "main": "dist/index.js",

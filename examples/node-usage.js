@@ -1,8 +1,8 @@
 // ESM import example
-import { convertToWord, isSupportedLanguage, getSupportedLanguageCodes } from 'number-to-word-az';
+import { convertToWord, isSupportedLanguage, getSupportedLanguageCodes } from 'ntw-conventer';
 
 // CommonJS require example (uncomment to use)
-// const { convertToWord, isSupportedLanguage, getSupportedLanguageCodes } = require('number-to-word-az');
+// const { convertToWord, isSupportedLanguage, getSupportedLanguageCodes } = require('ntw-conventer');
 
 // Basic usage
 console.log('===== Basic Usage =====');

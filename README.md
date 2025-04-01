@@ -1,8 +1,8 @@
-# number-to-word-az
+# ntw-conventer
 
 Convert numbers to words in multiple languages, with special support for Azerbaijani, English, and Turkish.
 
-[![NPM Version](https://img.shields.io/npm/v/number-to-word-az.svg)](https://www.npmjs.com/package/number-to-word-az)
+[![NPM Version](https://img.shields.io/npm/v/ntw-conventer.svg)](https://www.npmjs.com/package/ntw-conventer)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 ## Features
@@ -19,11 +19,11 @@ Convert numbers to words in multiple languages, with special support for Azerbai
 ## Installation
 
 ```bash
-npm install number-to-word-az
+npm install ntw-conventer
 # or
-yarn add number-to-word-az
+yarn add ntw-conventer
 # or
-pnpm add number-to-word-az
+pnpm add ntw-conventer
 ```
 
 ## Usage
@@ -31,7 +31,7 @@ pnpm add number-to-word-az
 ### ES Modules / TypeScript
 
 ```typescript
-import { convertToWord } from 'number-to-word-az';
+import { convertToWord } from 'ntw-conventer';
 
 // Default language is English
 console.log(convertToWord(42));  // => "forty-two"
@@ -59,7 +59,7 @@ console.log(convertToWord(-10, { language: 'tr' })); // => "eksi on"
 ### Integrate into Your Code
 
 ```javascript
-import { convertToWord } from 'number-to-word-az';
+import { convertToWord } from 'ntw-conventer';
 
 // Create a formatter function
 function formatAmount(amount, language = 'en') {

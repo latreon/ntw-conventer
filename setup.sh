@@ -1,8 +1,8 @@
 #!/bin/bash
 
-# Setup script for number-to-word-az
+# Setup script for ntw-conventer
 
-echo "Setting up number-to-word-az development environment..."
+echo "Setting up ntw-conventer development environment..."
 
 # Install dependencies
 echo "Installing dependencies..."
