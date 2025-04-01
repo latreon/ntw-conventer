@@ -1,7 +1,7 @@
 {
     "name": "ntw-conventer",
-    "version": "2.0.2",
-    "description": "Convert numbers to words in multiple languages, with special support for Azerbaijani, English, and Turkish",
+    "version": "2.1.0",
+    "description": "Convert numbers to words in multiple languages, with support for Azerbaijani, English, Spanish, Russian, German, French, Italian, Dutch, Portuguese, and Turkish",
     "type": "module",
     "main": "./dist/index.js",
     "module": "./dist/index.mjs",
@@ -27,11 +27,20 @@
     "keywords": [
         "number-to-word",
         "azerbaijani",
-        "azeri",
+        "english",
+        "spanish",
+        "russian",
+        "german",
+        "french",
+        "italian",
+        "dutch",
+        "portuguese",
+        "turkish",
+        "multilingual",
         "number-converter",
         "number-to-text",
         "text-converter",
-        "multilingual"
+        "i18n"
     ],
     "author": "Farda Karimov",
     "license": "MIT",

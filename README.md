@@ -1,13 +1,13 @@
 # Number to Word conventer
 
-Convert numbers to words in multiple languages, with special support for Azerbaijani, English, and Turkish.
+Convert numbers to words in multiple languages, with extensive multilingual support for 10 languages.
 
 [![NPM Version](https://img.shields.io/npm/v/ntw-conventer.svg)](https://www.npmjs.com/package/ntw-conventer)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 ## Features
 
-- ✅ Multilingual support (Azerbaijani, English, Turkish)
+- ✅ Extensive multilingual support (10 languages)
 - ✅ Converts numbers to words in the specified language
 - ✅ Handles integers and decimal numbers
 - ✅ Supports large numbers (up to 999 trillion)
@@ -38,7 +38,14 @@ console.log(convertToWord(42));  // => "forty-two"
 
 // Specify language with options
 console.log(convertToWord(42, { language: 'az' }));  // => "qırx iki"
+console.log(convertToWord(42, { language: 'de' }));  // => "zweiundvierzig"
 console.log(convertToWord(42, { language: 'en' }));  // => "forty-two"
+console.log(convertToWord(42, { language: 'es' }));  // => "cuarenta y dos"
+console.log(convertToWord(42, { language: 'fr' }));  // => "quarante-deux"
+console.log(convertToWord(42, { language: 'it' }));  // => "quarantadue"
+console.log(convertToWord(42, { language: 'nl' }));  // => "tweeënveertig"
+console.log(convertToWord(42, { language: 'pt' }));  // => "quarenta e dois"
+console.log(convertToWord(42, { language: 'ru' }));  // => "сорок два"
 console.log(convertToWord(42, { language: 'tr' }));  // => "kırk iki"
 
 // Large numbers
@@ -48,11 +55,13 @@ console.log(convertToWord(1234, { language: 'en' })); // => "one thousand two hu
 // Decimal numbers
 console.log(convertToWord(3.14, { language: 'az' })); // => "üç tam bir dörd"
 console.log(convertToWord(3.14, { language: 'en' })); // => "three point one four"
+console.log(convertToWord(3.14, { language: 'fr' })); // => "trois virgule un quatre"
 console.log(convertToWord(3.14, { language: 'tr' })); // => "üç virgül bir dört"
 
 // Negative numbers
 console.log(convertToWord(-10, { language: 'az' })); // => "mənfi on"
 console.log(convertToWord(-10, { language: 'en' })); // => "negative ten"
+console.log(convertToWord(-10, { language: 'ru' })); // => "минус десять"
 console.log(convertToWord(-10, { language: 'tr' })); // => "eksi on"
 ```
 
@@ -86,7 +95,7 @@ Converts a number to its word representation in the specified language.
 
 - `number` (number | string): The number to convert
 - `options` (object, optional): Configuration options
-  - `language` (string, default: 'en'): The ISO 639-1 language code ('az', 'en', 'tr')
+  - `language` (string, default: 'en'): The ISO 639-1 language code ('az', 'de', 'en', 'es', 'fr', 'it', 'nl', 'pt', 'ru', 'tr')
   - `includeDecimalText` (boolean, default: true): Whether to include decimal text (point, tam, virgül, etc.)
   - `capitalize` (boolean, default: false): Whether to capitalize the first letter of the result
 
@@ -121,7 +130,12 @@ Gets a list of all supported language codes.
 | az   | Azerbaijani| 123.45                   | bir yüz iyirmi üç tam dörd beş     |
 | de   | German     | 123.45                   | einhundertdreiundzwanzig Komma vier fünf |
 | en   | English    | 123.45                   | one hundred twenty-three point four five |
+| es   | Spanish    | 123.45                   | ciento veintitrés coma cuatro cinco |
 | fr   | French     | 123.45                   | cent vingt-trois virgule quatre cinq |
+| it   | Italian    | 123.45                   | cento ventitré virgola quattro cinque |
+| nl   | Dutch      | 123.45                   | honderddrieëntwintig komma vier vijf |
+| pt   | Portuguese | 123.45                   | cento e vinte e três vírgula quatro cinco |
+| ru   | Russian    | 123.45                   | сто двадцать три целых четыре пять |
 | tr   | Turkish    | 123.45                   | yüz yirmi üç virgül dört beş       |
 
 ## Supported Range

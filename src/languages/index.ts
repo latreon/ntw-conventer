@@ -5,7 +5,12 @@
 import * as az from './az';
 import * as de from './de';
 import * as en from './en';
+import * as es from './es';
 import * as fr from './fr';
+import * as it from './it';
+import * as nl from './nl';
+import * as pt from './pt';
+import * as ru from './ru';
 import * as tr from './tr';
 
 // Language module interface
@@ -27,7 +32,12 @@ export const languages: { [code: string]: LanguageModule } = {
     az, // Azerbaijani
     de, // German
     en, // English
+    es, // Spanish
     fr, // French
+    it, // Italian
+    nl, // Dutch
+    pt, // Portuguese
+    ru, // Russian
     tr, // Turkish
 };
 
