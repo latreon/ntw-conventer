@@ -4,14 +4,14 @@
 
 // Translation maps
 const DIGIT_NAMES: string[] = ['sıfır', 'bir', 'iki', 'üç', 'dörd', 'beş', 'altı', 'yeddi', 'səkkiz', 'doqquz'];
-const TENS_NAMES: string[] = ['on', 'on bir', 'on iki', 'on üç', 'on dörd', 'on beş', 'on altı', 'on yeddi', 'on səkkiz', 'on doqquz'];
+const TEENS_NAMES: string[] = ['on', 'on bir', 'on iki', 'on üç', 'on dörd', 'on beş', 'on altı', 'on yeddi', 'on səkkiz', 'on doqquz'];
 const TENS_MULTIPLES: string[] = ['iyirmi', 'otuz', 'qırx', 'əlli', 'altmış', 'yetmiş', 'səksən', 'doxsan'];
 const SCALE_NAMES: string[] = ['', 'min', 'milyon', 'milyard', 'trilyon'];
 
 // Language-specific error messages
 export const ERROR_MESSAGES = {
-    NOT_A_NUMBER: 'Verilən dəyər rəqəm deyil',
-    NUMBER_TOO_LARGE: 'Çox böyük rəqəm: maksimum 999 trilyon dəstəklənir',
+    NOT_A_NUMBER: 'Verilən dəyər bir rəqəm deyil',
+    NUMBER_TOO_LARGE: 'Çox böyük nömrə: maksimum 999 trilyon dəstəklənir',
 };
 
 // Language-specific text
@@ -21,16 +21,50 @@ export const LANGUAGE_TEXT = {
 };
 
 /**
- * Checks if a range of digits has at least one non-zero value
+ * Converts a number from 1-99 to Azerbaijani words
  */
-function hasNonZeroDigit(digits: string[], start: number, length: number): boolean {
-    const end = Math.min(start + length, digits.length);
-    for (let i = start; i < end; i++) {
-        if (parseInt(digits[i], 10) !== 0) {
-            return true;
+function convertTwoDigits(number: number): string {
+    if (number === 0) return '';
+    
+    if (number < 10) {
+        return DIGIT_NAMES[number];
+    } else if (number < 20) {
+        return TEENS_NAMES[number - 10];
+    } else {
+        const tens = Math.floor(number / 10);
+        const ones = number % 10;
+        
+        if (ones === 0) {
+            return TENS_MULTIPLES[tens - 2];
+        } else {
+            return TENS_MULTIPLES[tens - 2] + ' ' + DIGIT_NAMES[ones];
         }
     }
-    return false;
+}
+
+/**
+ * Converts a number from 100-999 to Azerbaijani words
+ */
+function convertThreeDigits(number: number): string {
+    if (number === 0) return '';
+    
+    const hundreds = Math.floor(number / 100);
+    const tensAndOnes = number % 100;
+    
+    let result = '';
+    
+    if (hundreds > 0) {
+        result += DIGIT_NAMES[hundreds] + ' yüz';
+        if (tensAndOnes > 0) {
+            result += ' ';
+        }
+    }
+    
+    if (tensAndOnes > 0) {
+        result += convertTwoDigits(tensAndOnes);
+    }
+    
+    return result;
 }
 
 /**
@@ -38,57 +72,43 @@ function hasNonZeroDigit(digits: string[], start: number, length: number): boole
  */
 export function convertIntegerPart(integerPart: string): string {
     if (integerPart === '0') return DIGIT_NAMES[0];
-
+    
     // Remove leading zeros
     integerPart = integerPart.replace(/^0+/, '');
     if (integerPart === '') return DIGIT_NAMES[0];
-
-    const digits = integerPart.split('');
-    const length = digits.length;
-
+    
+    const number = parseInt(integerPart, 10);
+    
+    // Handle special case for 0
+    if (number === 0) return DIGIT_NAMES[0];
+    
+    // Process number in groups of 3 digits
+    const groups: number[] = [];
+    let tempNum = number;
+    
+    while (tempNum > 0) {
+        groups.push(tempNum % 1000);
+        tempNum = Math.floor(tempNum / 1000);
+    }
+    
     let result = '';
-    let skipNext = false;
-
-    for (let i = 0; i < length; i++) {
-        if (skipNext) {
-            skipNext = false;
-            continue;
-        }
-
-        const digit = parseInt(digits[i], 10);
-        const position = length - i;
-
-        // Handle different positions
-        const positionInGroup = position % 3;
-        const scaleIndex = Math.floor((position - 1) / 3);
-
-        // Process hundreds
-        if (positionInGroup === 0 && digit > 0) {
-            result += `${DIGIT_NAMES[digit]} yüz `;
-        }
-        // Process tens
-        else if (positionInGroup === 2) {
-            if (digit === 1) {
-                // Special case for 10-19
-                const nextDigit = parseInt(digits[i + 1], 10);
-                result += `${TENS_NAMES[nextDigit]} `;
-                skipNext = true;
-            } else if (digit > 1) {
-                result += `${TENS_MULTIPLES[digit - 2]} `;
-            }
-        }
-        // Process ones
-        else if (positionInGroup === 1 && !skipNext && digit > 0) {
-            result += `${DIGIT_NAMES[digit]} `;
-        }
-
-        // Add scale name (thousand, million, etc.) if this is the last digit in a group
-        // and the group has some non-zero value
-        if (positionInGroup === 1 && scaleIndex > 0 && hasNonZeroDigit(digits, i - (positionInGroup - 1), 3)) {
-            result += `${SCALE_NAMES[scaleIndex]} `;
+    
+    for (let i = groups.length - 1; i >= 0; i--) {
+        const group = groups[i];
+        
+        if (group === 0) continue;
+        
+        const groupStr = convertThreeDigits(group);
+        
+        if (i > 0) {
+            // For scale groups (thousands, millions, etc.)
+            result += groupStr + ' ' + SCALE_NAMES[i] + ' ';
+        } else {
+            // For the ones group
+            result += groupStr;
         }
     }
-
+    
     return result.trim();
 }
 
@@ -97,18 +117,19 @@ export function convertIntegerPart(integerPart: string): string {
  */
 export function convertDecimalPart(decimalPart: string): string {
     if (!decimalPart || decimalPart === '0') return '';
-
+    
     // Remove trailing zeros
     decimalPart = decimalPart.replace(/0+$/, '');
     if (decimalPart === '') return '';
-
+    
     const digits = decimalPart.split('');
     let result = '';
-
+    
     for (let i = 0; i < digits.length; i++) {
         const digit = parseInt(digits[i], 10);
-        result += `${DIGIT_NAMES[digit]} `;
+        if (i > 0) result += ' ';
+        result += DIGIT_NAMES[digit];
     }
-
-    return result.trim();
+    
+    return result;
 } 

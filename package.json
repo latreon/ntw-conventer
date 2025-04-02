@@ -1,25 +1,28 @@
 {
     "name": "ntw-conventer",
-    "version": "2.1.0",
-    "description": "Convert numbers to words in multiple languages, with support for Azerbaijani, English, Spanish, Russian, German, French, Italian, Dutch, Portuguese, and Turkish",
+    "version": "2.2.0",
+    "description": "Convert numbers to words in multiple languages, with support for Azerbaijani, English, Spanish, Russian, German, French, Italian, Dutch, Portuguese, Turkish, Polish, Swedish, and Finnish",
     "type": "module",
     "main": "./dist/index.js",
     "module": "./dist/index.mjs",
+    "browser": "./dist/index.mjs",
+    "umd:main": "./dist/index.umd.js",
+    "unpkg": "./dist/index.mjs",
     "types": "./dist/index.d.ts",
     "exports": {
         ".": {
+            "types": "./dist/index.d.ts",
             "import": "./dist/index.mjs",
             "require": "./dist/index.js",
-            "default": "./dist/index.js",
-            "types": "./dist/index.d.ts"
+            "default": "./dist/index.mjs"
         }
     },
     "files": [
         "dist"
     ],
     "scripts": {
-        "build": "tsup src/index.ts --format esm,cjs --dts",
-        "dev": "tsup src/index.ts --format esm,cjs --dts --watch",
+        "build": "tsup src/index.ts --format esm,cjs,iife --dts --global-name ntwConverter",
+        "dev": "tsup src/index.ts --format esm,cjs,iife --dts --watch --global-name ntwConverter",
         "lint": "eslint src/**/*.ts",
         "test": "jest",
         "prepublishOnly": "npm run build"
@@ -36,6 +39,9 @@
         "dutch",
         "portuguese",
         "turkish",
+        "polish",
+        "swedish",
+        "finnish",
         "multilingual",
         "number-converter",
         "number-to-text",
@@ -53,14 +59,14 @@
     },
     "homepage": "https://github.com/latreon/number-to-word#readme",
     "devDependencies": {
-        "@types/jest": "^29.5.0",
-        "@types/node": "^18.15.11",
-        "@typescript-eslint/eslint-plugin": "^5.57.1",
-        "@typescript-eslint/parser": "^5.57.1",
-        "eslint": "^8.38.0",
-        "jest": "^29.5.0",
-        "ts-jest": "^29.1.0",
-        "tsup": "^6.7.0",
-        "typescript": "^5.0.4"
+        "@types/jest": "^29.5.12",
+        "@types/node": "^20.11.30",
+        "@typescript-eslint/eslint-plugin": "^7.3.1",
+        "@typescript-eslint/parser": "^7.3.1",
+        "eslint": "^8.57.0",
+        "jest": "^29.7.0",
+        "ts-jest": "^29.1.2",
+        "tsup": "^8.0.2",
+        "typescript": "^5.4.3"
     }
 }

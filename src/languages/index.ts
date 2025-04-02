@@ -2,15 +2,21 @@
  * Language module registry for number-to-word conversion
  */
 
+import * as ar from './ar';
 import * as az from './az';
 import * as de from './de';
 import * as en from './en';
 import * as es from './es';
+import * as fi from './fi';
 import * as fr from './fr';
+import * as hi from './hi';
 import * as it from './it';
+import * as ja from './ja';
 import * as nl from './nl';
+import * as pl from './pl';
 import * as pt from './pt';
 import * as ru from './ru';
+import * as sv from './sv';
 import * as tr from './tr';
 
 // Language module interface
@@ -29,15 +35,21 @@ export interface LanguageModule {
 
 // Available languages with their ISO 639-1 codes
 export const languages: { [code: string]: LanguageModule } = {
+    ar, // Arabic
     az, // Azerbaijani
     de, // German
     en, // English
     es, // Spanish
+    fi, // Finnish
     fr, // French
+    hi, // Hindi
     it, // Italian
+    ja, // Japanese
     nl, // Dutch
+    pl, // Polish
     pt, // Portuguese
     ru, // Russian
+    sv, // Swedish
     tr, // Turkish
 };
 

@@ -4,14 +4,15 @@
 
 // Translation maps
 const DIGIT_NAMES: string[] = ['zéro', 'un', 'deux', 'trois', 'quatre', 'cinq', 'six', 'sept', 'huit', 'neuf'];
-const TEENS: string[] = ['dix', 'onze', 'douze', 'treize', 'quatorze', 'quinze', 'seize', 'dix-sept', 'dix-huit', 'dix-neuf'];
+const TEENS_NAMES: string[] = ['dix', 'onze', 'douze', 'treize', 'quatorze', 'quinze', 'seize', 'dix-sept', 'dix-huit', 'dix-neuf'];
 const TENS_MULTIPLES: string[] = ['vingt', 'trente', 'quarante', 'cinquante', 'soixante', 'soixante-dix', 'quatre-vingt', 'quatre-vingt-dix'];
-const SCALE_NAMES: string[] = ['', 'mille', 'million', 'milliard', 'billion'];
+const SCALE_NAMES: string[] = ['', 'mille', 'million', 'milliard', 'billion', 'billiard', 'trillion'];
+const SCALE_NAMES_PLURAL: string[] = ['', 'mille', 'millions', 'milliards', 'billions', 'billiards', 'trillions'];
 
 // Language-specific error messages
 export const ERROR_MESSAGES = {
     NOT_A_NUMBER: 'La valeur fournie n\'est pas un nombre',
-    NUMBER_TOO_LARGE: 'Nombre trop grand: maximum 999 billions est pris en charge',
+    NUMBER_TOO_LARGE: 'Nombre trop grand: maximum de 999 billions pris en charge',
 };
 
 // Language-specific text
@@ -21,53 +22,101 @@ export const LANGUAGE_TEXT = {
 };
 
 /**
- * Checks if a range of digits has at least one non-zero value
+ * Gets the appropriate scale name based on the number
  */
-function hasNonZeroDigit(digits: string[], start: number, length: number): boolean {
-    const end = Math.min(start + length, digits.length);
-    for (let i = start; i < end; i++) {
-        if (parseInt(digits[i], 10) !== 0) {
-            return true;
-        }
+function getScaleName(number: number, scaleIndex: number): string {
+    // For "mille" (thousand), we never use plural in French
+    if (scaleIndex === 1) return SCALE_NAMES[scaleIndex];
+    
+    if (number === 1) {
+        return SCALE_NAMES[scaleIndex];
+    } else {
+        return SCALE_NAMES_PLURAL[scaleIndex];
     }
-    return false;
 }
 
 /**
- * Converts a number from 1-99 to words in French
  * French has special rules for 70-99
+ * 70-79: soixante-dix, soixante-et-onze, soixante-douze, etc. (sixty-ten, sixty-and-eleven, sixty-twelve)
+ * 90-99: quatre-vingt-dix, quatre-vingt-onze, etc. (four-twenty-ten, four-twenty-eleven)
  */
-function convertUnderHundred(number: number): string {
+function handleSpecialTens(number: number): string {
+    if (number >= 70 && number <= 79) {
+        // 70-79: soixante-dix (60+10), soixante-et-onze (60+11), etc.
+        return 'soixante-' + (number === 71 ? 'et-onze' : TEENS_NAMES[number - 70]);
+    }
+    
+    if (number >= 90 && number <= 99) {
+        // 90-99: quatre-vingt-dix (4*20+10), quatre-vingt-onze (4*20+11), etc.
+        return 'quatre-vingt-' + TEENS_NAMES[number - 90];
+    }
+    
+    return '';
+}
+
+/**
+ * Converts a number from 1-99 to French words
+ */
+function convertTwoDigits(number: number): string {
     if (number === 0) return '';
-    if (number === 1) return 'un';
-    if (number <= 9) return DIGIT_NAMES[number];
-    if (number <= 19) return TEENS[number - 10];
+    
+    if (number < 10) {
+        return DIGIT_NAMES[number];
+    } else if (number < 20) {
+        return TEENS_NAMES[number - 10];
+    } else if (number === 21 || number === 31 || number === 41 || number === 51 || number === 61) {
+        // Special case for numbers like 21, 31, 41, 51, 61 that use "et-un" (and-one)
+        const tens = Math.floor(number / 10);
+        return TENS_MULTIPLES[tens - 2] + '-et-un';
+    } else if ((number >= 70 && number <= 79) || (number >= 90 && number <= 99)) {
+        // Special case for 70-79 and 90-99
+        return handleSpecialTens(number);
+    } else {
+        const tens = Math.floor(number / 10);
+        const ones = number % 10;
+        
+        if (ones === 0) {
+            if (number === 80) {
+                // Special case for 80: quatre-vingts (with an 's')
+                return 'quatre-vingts';
+            }
+            return TENS_MULTIPLES[tens - 2];
+        } else {
+            return TENS_MULTIPLES[tens - 2] + '-' + DIGIT_NAMES[ones];
+        }
+    }
+}
 
-    const tens = Math.floor(number / 10);
-    const ones = number % 10;
-
-    // Special cases for French
-    if (tens === 7) {
-        // 70-79: soixante-dix, soixante-et-onze, soixante-douze, etc.
-        return ones === 0 ? 'soixante-dix' :
-            ones === 1 ? 'soixante-et-onze' :
-                `soixante-${TEENS[ones - 10]}`;
+/**
+ * Converts a number from 100-999 to French words
+ */
+function convertThreeDigits(number: number): string {
+    const hundreds = Math.floor(number / 100);
+    const tensAndOnes = number % 100;
+    
+    let result = '';
+    
+    if (hundreds > 0) {
+        if (hundreds === 1) {
+            // For 100, we say "cent" not "un cent"
+            result += 'cent';
+        } else {
+            result += DIGIT_NAMES[hundreds] + ' cent';
+            // Special case for exact hundreds (200, 300, etc.) - add 's' in French
+            if (tensAndOnes === 0 && hundreds > 1) {
+                result += 's';
+            }
+        }
     }
-    else if (tens === 9) {
-        // 90-99: quatre-vingt-dix, quatre-vingt-onze, quatre-vingt-douze, etc.
-        return ones === 0 ? 'quatre-vingt-dix' : `quatre-vingt-${TEENS[ones - 10]}`;
+    
+    if (tensAndOnes > 0) {
+        if (hundreds > 0) {
+            result += ' ';
+        }
+        result += convertTwoDigits(tensAndOnes);
     }
-    else if (tens === 8) {
-        // 80-89: quatre-vingts, quatre-vingt-un, quatre-vingt-deux, etc.
-        // Note: "quatre-vingts" with an 's' only when not followed by another number
-        return ones === 0 ? 'quatre-vingts' : `quatre-vingt-${DIGIT_NAMES[ones]}`;
-    }
-    else {
-        // Regular cases: vingt, vingt-et-un, vingt-deux
-        return ones === 0 ? TENS_MULTIPLES[tens - 2] :
-            ones === 1 ? `${TENS_MULTIPLES[tens - 2]}-et-un` :
-                `${TENS_MULTIPLES[tens - 2]}-${DIGIT_NAMES[ones]}`;
-    }
+    
+    return result;
 }
 
 /**
@@ -75,82 +124,50 @@ function convertUnderHundred(number: number): string {
  */
 export function convertIntegerPart(integerPart: string): string {
     if (integerPart === '0') return DIGIT_NAMES[0];
-
+    
     // Remove leading zeros
     integerPart = integerPart.replace(/^0+/, '');
     if (integerPart === '') return DIGIT_NAMES[0];
-
-    const digits = integerPart.split('');
-    const length = digits.length;
+    
     const number = parseInt(integerPart, 10);
-
-    // Handle special cases for small numbers
-    if (number <= 99) {
-        return convertUnderHundred(number);
+    
+    // Handle special case for 0
+    if (number === 0) return DIGIT_NAMES[0];
+    
+    // Process number in groups of 3 digits
+    const groups: number[] = [];
+    let tempNum = number;
+    
+    while (tempNum > 0) {
+        groups.push(tempNum % 1000);
+        tempNum = Math.floor(tempNum / 1000);
     }
-
+    
     let result = '';
-    let i = 0;
-
-    // Process the number in groups of three digits
-    while (i < length) {
-        const remainingDigits = length - i;
-        const groupIndex = Math.floor((remainingDigits - 1) / 3); // Scale index
-        const groupSize = Math.min(3, remainingDigits);
-
-        // Get the current group of up to three digits
-        const groupStr = integerPart.substring(i, i + groupSize);
-        const groupNum = parseInt(groupStr, 10);
-
-        if (groupNum !== 0) {
-            let groupText = '';
-
-            // Handle hundreds
-            if (groupStr.length === 3) {
-                const hundreds = Math.floor(groupNum / 100);
-                if (hundreds === 1) {
-                    groupText += 'cent ';
-                } else if (hundreds > 1) {
-                    groupText += `${DIGIT_NAMES[hundreds]} cent `;
-                }
-
-                // Now convert the remainder (tens and ones)
-                const remainder = groupNum % 100;
-                if (remainder > 0) {
-                    groupText += convertUnderHundred(remainder) + ' ';
-                }
-            }
-            // Handle tens and ones (for groups of 1 or 2 digits)
-            else {
-                groupText += convertUnderHundred(groupNum) + ' ';
-            }
-
-            // Add the scale name
-            if (groupIndex > 0) {
-                // In French: 
-                // 1000 = "mille" (not "un mille")
-                // 1,000,000 = "un million" (needs "un")
-                if (groupIndex === 1 && groupNum === 1) {
-                    // Special case for 1000: just "mille" without "un"
-                    groupText = 'mille ';
+    
+    for (let i = groups.length - 1; i >= 0; i--) {
+        const group = groups[i];
+        
+        if (group === 0) continue;
+        
+        if (i > 0) {
+            // For scale groups (thousands, millions, etc.)
+            if (i === 1) {
+                // For thousands, we don't say "un mille", just "mille"
+                if (group === 1) {
+                    result += 'mille ';
                 } else {
-                    const scaleName = SCALE_NAMES[groupIndex];
-
-                    // Add 's' for millions, milliards etc. when greater than 1
-                    if (groupIndex >= 2 && groupNum > 1) {
-                        groupText += scaleName + 's ';
-                    } else {
-                        groupText += scaleName + ' ';
-                    }
+                    result += convertThreeDigits(group) + ' ' + getScaleName(group, i) + ' ';
                 }
+            } else {
+                result += convertThreeDigits(group) + ' ' + getScaleName(group, i) + ' ';
             }
-
-            result += groupText;
+        } else {
+            // For the ones group
+            result += convertThreeDigits(group);
         }
-
-        i += groupSize;
     }
-
+    
     return result.trim();
 }
 
@@ -159,18 +176,19 @@ export function convertIntegerPart(integerPart: string): string {
  */
 export function convertDecimalPart(decimalPart: string): string {
     if (!decimalPart || decimalPart === '0') return '';
-
+    
     // Remove trailing zeros
     decimalPart = decimalPart.replace(/0+$/, '');
     if (decimalPart === '') return '';
-
+    
     const digits = decimalPart.split('');
     let result = '';
-
+    
     for (let i = 0; i < digits.length; i++) {
         const digit = parseInt(digits[i], 10);
-        result += `${DIGIT_NAMES[digit]} `;
+        if (i > 0) result += ' ';
+        result += DIGIT_NAMES[digit];
     }
-
-    return result.trim();
+    
+    return result;
 } 
